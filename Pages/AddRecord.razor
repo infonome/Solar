@@ -1,0 +1,145 @@
+﻿@page "/addrecord"
+@using System.Xml
+@using System.Net.Http.Headers
+@using System.IO
+@using System.Text
+<h3>AddRecord</h3>
+<table style="width:100%;">
+    <col style="width:35%">
+	<col style="width:5%">
+	<col style="width:60%">
+    <tr><td>First Name:</td><td>&nbsp;</td><td><input @bind="firstName" id="TextFN" type="text" /></td></tr>
+    <tr><td>Last Name:</td><td>&nbsp;</td><td><input @bind="lastName" id="TextLN" type="text" /></td></tr>
+    <tr><td>Address Street:</td><td>&nbsp;</td><td><input @bind="addressStreet" id="TextAS" type="text" /></td></tr>
+    <tr><td>Address City:</td><td>&nbsp;</td><td><input @bind="addressCity" id="TextAC" type="text" /></td></tr>
+    <tr><td>Address State:</td><td>&nbsp;</td><td><input @bind="addressState" id="TextAState" type="text" /></td></tr>
+    <tr><td>Address Postal Code:</td><td>&nbsp;</td><td><input @bind="addressPostal" id="TextAPC" type="text" /></td></tr>
+
+    <tr><td>Email:</td><td>&nbsp;</td><td><input id="TextEmail" @bind="email" type="text" /></td></tr>
+    <tr><td>Phone:</td><td>&nbsp;</td><td><input id="TextPhone" @bind="phone" type="text" /></td></tr>
+    <tr><td>Homeowner on Deed:</td><td>&nbsp;</td><td><input @bind="homeownerOnDeed" id="TextHomeowner" type="text" /></td></tr>
+    <tr><td>Age of Roof:</td><td>&nbsp;</td><td><input @bind="ageOfRoof" id="TextAgeRoof" type="text" /></td></tr>
+    <tr><td>Notes for Sales Team:</td><td>&nbsp;</td><td><input @bind="notesForSales" id="TextNotes" type="text" /></td></tr>
+    <tr><td>Avg Electric Bill Cost:</td><td>&nbsp;</td><td><input @bind="avgElecBill" id="TextAvgEleBill" type="text" /></td></tr>
+
+    <tr><td>Electric Company:</td><td>&nbsp;</td><td><input @bind="electricityCompany" id="TextEleComp" type="text" /></td></tr>
+    <tr><td>Alt Phone:</td><td>&nbsp;</td><td><input @bind="altPhone" id="TextAltPhone" type="text" /></td></tr>
+    <tr><td>Spouse/Additional Decision Maker Name:</td><td>&nbsp;</td><td><input @bind="spouse" id="TextSpouses" type="text" /></td></tr>
+    <tr><td>Warm Transfer:</td><td>&nbsp;</td><td><input @bind="warmTransfer" id="TextWarmTrans" type="text" /></td></tr>
+    <tr><td>Appointment Date/Time:</td><td>&nbsp;</td><td><input @bind="appointmentDate" id="TextAppoint" type="text" /></td></tr>
+    <tr><td>Vendor Lead ID:</td><td>&nbsp;</td><td><input @bind="vendorLead" id="TextVendorLead" type="text" /></td></tr>
+    <tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>
+            <button class="btn btn-primary" @onclick="SubmitAddRecord">
+                Submit
+            </button>
+        </td>
+    </tr>
+
+</table>
+
+@code {
+    private string firstName;
+    private string lastName;
+    private string addressStreet;
+    private string addressCity;
+    private string addressState;
+    private string addressPostal;
+    private string email;
+    private string phone;
+    private string homeownerOnDeed;
+    private string ageOfRoof;
+    private string notesForSales;
+    private string avgElecBill;
+    private string electricityCompany;
+    private string altPhone;
+    private string spouse;
+    private string warmTransfer;
+    private string appointmentDate;
+    private string vendorLead;
+    private async Task SubmitAddRecord(MouseEventArgs e)
+    {
+        var objHttpClient = new HttpClient();
+        string addRecXml = GetXML();
+        Console.WriteLine("XML");
+        Console.WriteLine(addRecXml);
+        var requestMessage = new HttpRequestMessage()
+        {
+            Method = new HttpMethod("POST"),
+            RequestUri = new Uri("https://suntuity.quickbase.com/db/bkdhkmy4a")
+        };
+        var httpContent = new StringContent(addRecXml, Encoding.UTF8, "application/xml");
+    
+        requestMessage.Content = httpContent;//new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes(addRecXml)));
+        //requestMessage.Content.Headers.Add("Content-Type", "application/xml");
+        requestMessage.Content.Headers.Add("QUICKBASE-ACTION", "API_AddRecord");
+        Console.WriteLine("Request ToString");
+        Console.WriteLine(requestMessage.ToString());
+        
+        var result = await objHttpClient.SendAsync(requestMessage);
+    }
+    private string GetXML()
+    {
+XmlDocument doc = new XmlDocument();
+        string xmlDoc = "<qdbapi>"+
+                        "<udata>mydata</udata>"+
+                        "<usertoken>b3jtnz_g536_ ces4w6jdj6pfs265nw3kvnx8iu</usertoken>"+
+                        "<field _fid_=\"7\">AgainstTimeWarms</field>"+
+                        "<field _fid_=\"660\">534</field>"+
+                        "<field _fid_=\"773\">87</field>"+
+                        "</qdbapi>";
+        doc.LoadXml(xmlDoc);
+        XmlElement root = doc.DocumentElement; 
+        
+        XmlNode tElem = CreateFidNode(doc, "6", firstName); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "56", lastName); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "11", addressStreet); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "13", addressCity); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "14", addressState); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "15", addressPostal); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "20", email); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "17", phone); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "625", homeownerOnDeed); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "626", ageOfRoof); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "21", notesForSales); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "627", avgElecBill); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "632", electricityCompany); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "679", altPhone); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "751", spouse); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "669", warmTransfer); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "671", appointmentDate); 
+        root.AppendChild(tElem);
+        tElem = CreateFidNode(doc, "686", vendorLead); 
+        root.AppendChild(tElem);
+
+        return doc.OuterXml;
+    }
+    private XmlNode CreateFidNode(XmlDocument xmlDoc, string fidId, string fidValue)
+    {
+    XmlNode newElem = xmlDoc.CreateNode("element", "field", "");
+    XmlAttribute attr = xmlDoc.CreateAttribute("_fid_");
+    attr.Value=fidId;
+    newElem.Attributes.Append(attr);
+    newElem.InnerText = fidValue;
+    return newElem;
+    }
+}
